@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
@@ -52,7 +52,7 @@ jobs:
       name: us-east-1
     needs: build
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
       - name: Install Cargo Lambda
         uses: jaxxstorm/action-install-gh-release@v1.9.0
