@@ -41,7 +41,7 @@ async fn function_handler(
                 .await?;
 
             // Successful responses get passed through raw, errors get marshalled
-            response::create(directive.header.correlation_token.to_owned(), response)
+            response::create(event.payload.directive.header.correlation_token, response)
                 .await
                 .ok_or("Could not serialize a response".into())
         }
