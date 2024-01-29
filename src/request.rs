@@ -25,7 +25,7 @@ pub struct Bearer {
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Endpoint {
+pub struct EndpointConfig {
     pub scope: Bearer,
     pub endpoint_id: String,
     pub cookie: Box<RawValue>,
@@ -50,7 +50,7 @@ pub struct Payload {
 #[serde(rename_all = "camelCase")]
 pub struct Directive {
     pub header: Header,
-    pub endpoint: Option<Endpoint>,
+    pub endpoint: Option<EndpointConfig>,
     pub payload: Option<Payload>,
 }
 
