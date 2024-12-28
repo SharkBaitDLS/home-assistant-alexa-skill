@@ -10,12 +10,12 @@ struct ErrorHeader {
     namespace: String,
     name: String,
     message_id: String,
-    correlation_token: String,
+    correlation_token: Option<String>,
     payload_version: String,
 }
 
 impl ErrorHeader {
-    fn new(correlation_token: String) -> Self {
+    fn new(correlation_token: Option<String>) -> Self {
         ErrorHeader {
             namespace: "Alexa".to_owned(),
             name: "ErrorResponse".to_owned(),
@@ -56,7 +56,10 @@ struct ErrorResponse {
 }
 
 #[instrument]
-pub async fn create(correlation_token: String, response: Response) -> Option<Box<RawValue>> {
+pub async fn create(
+    correlation_token: Option<String>,
+    response: Response,
+) -> Option<Box<RawValue>> {
     match response.status() {
         StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN => {
             let message = response

@@ -9,7 +9,7 @@ pub struct Header {
     pub namespace: String,
     pub name: String,
     pub payload_version: MustBe!("3"),
-    pub correlation_token: String,
+    pub correlation_token: Option<String>,
 }
 
 #[derive(Derivative, Deserialize, Serialize)]
