@@ -61,6 +61,7 @@ pub struct Request {
     pub directive: Directive,
 }
 
+#[allow(clippy::ref_option)]
 fn none_to_empty_struct<S, O>(opt: &Option<O>, s: S) -> Result<S::Ok, S::Error>
 where
     O: Serialize,
