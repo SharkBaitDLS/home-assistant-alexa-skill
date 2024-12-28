@@ -1,5 +1,5 @@
 use monostate::MustBe;
-use serde::{Deserialize, Serialize};
+use serde::{ser::SerializeStruct, Deserialize, Serialize, Serializer};
 use serde_json::value::{RawValue, Value};
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -50,6 +50,7 @@ pub struct Payload {
 #[serde(rename_all = "camelCase")]
 pub struct Directive {
     pub header: Header,
+    #[serde(serialize_with = "none_to_empty_struct")]
     pub endpoint: Option<EndpointConfig>,
     pub payload: Option<Payload>,
 }
@@ -58,4 +59,17 @@ pub struct Directive {
 #[serde(rename_all = "camelCase")]
 pub struct Request {
     pub directive: Directive,
+}
+
+fn none_to_empty_struct<S, O>(opt: &Option<O>, s: S) -> Result<S::Ok, S::Error>
+where
+    O: Serialize,
+    S: Serializer,
+{
+    if opt.is_some() {
+        s.serialize_some(opt)
+    } else {
+        let obj = s.serialize_struct("None", 0)?;
+        obj.end()
+    }
 }
