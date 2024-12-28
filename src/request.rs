@@ -1,18 +1,15 @@
 use monostate::MustBe;
-use serde::{ser::SerializeStruct, Deserialize, Serialize, Serializer};
-use serde_json::value::{RawValue, Value};
+use serde::Deserialize;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Header {
-    pub message_id: String,
-    pub namespace: String,
-    pub name: String,
+    #[allow(dead_code)]
     pub payload_version: MustBe!("3"),
     pub correlation_token: Option<String>,
 }
 
-#[derive(Derivative, Deserialize, Serialize)]
+#[derive(Derivative, Deserialize)]
 #[derivative(Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Bearer {
@@ -23,54 +20,31 @@ pub struct Bearer {
     pub token: String,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointConfig {
     pub scope: Bearer,
-    pub endpoint_id: String,
-    pub cookie: Box<RawValue>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Payload {
     // Depending on the request type, the auth data will be in one of these
     // fields (or in the endpoint struct)
     pub grantee: Option<Bearer>,
     pub scope: Option<Bearer>,
-
-    // There's sometimes contextual data for the actual smart home request
-    // in here that needs to be forwarded to the HA instance, but we don't care
-    // about it otherwise so it doesn't need to be modeled
-    #[serde(flatten)]
-    rest: Value,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Directive {
     pub header: Header,
-    #[serde(serialize_with = "none_to_empty_struct")]
     pub endpoint: Option<EndpointConfig>,
     pub payload: Option<Payload>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Request {
     pub directive: Directive,
-}
-
-#[allow(clippy::ref_option)]
-fn none_to_empty_struct<S, O>(opt: &Option<O>, s: S) -> Result<S::Ok, S::Error>
-where
-    O: Serialize,
-    S: Serializer,
-{
-    if opt.is_some() {
-        s.serialize_some(opt)
-    } else {
-        let obj = s.serialize_struct("None", 0)?;
-        obj.end()
-    }
 }

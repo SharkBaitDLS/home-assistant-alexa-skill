@@ -7,17 +7,18 @@ extern crate derivative;
 use lambda_runtime::{run, service_fn, Error, LambdaEvent};
 use request::Request;
 use reqwest::Client;
-use serde_json::value::RawValue;
+use serde_json::{from_value, value::RawValue, Value};
 use tracing::instrument;
 use tracing_subscriber::EnvFilter;
 
 #[instrument(level = "debug")]
 async fn function_handler(
-    event: LambdaEvent<Request>,
+    event: LambdaEvent<Value>,
     client: &Client,
     base_url: &str,
 ) -> Result<Box<RawValue>, Error> {
-    let directive = &event.payload.directive;
+    let payload: Request = from_value(event.payload.clone())?;
+    let directive = &payload.directive;
 
     // The auth token will be in one of these 3 places depending on the type of request
     let token = directive
@@ -41,7 +42,7 @@ async fn function_handler(
                 .await?;
 
             // Successful responses get passed through raw, errors get marshalled
-            response::create(event.payload.directive.header.correlation_token, response)
+            response::create(payload.directive.header.correlation_token, response)
                 .await
                 .ok_or("Could not serialize a response".into())
         }
