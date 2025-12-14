@@ -1,7 +1,7 @@
 use reqwest::{Response, StatusCode};
 use serde::Serialize;
 use serde_json::value::RawValue;
-use tracing::{event, instrument, Level};
+use tracing::{Level, event, instrument};
 use uuid::Uuid;
 
 #[derive(Serialize)]

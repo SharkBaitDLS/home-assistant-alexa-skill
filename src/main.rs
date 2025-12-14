@@ -4,10 +4,10 @@ mod response;
 #[macro_use]
 extern crate derivative;
 
-use lambda_runtime::{run, service_fn, Error, LambdaEvent};
+use lambda_runtime::{Error, LambdaEvent, run, service_fn};
 use request::Request;
 use reqwest::Client;
-use serde_json::{from_value, value::RawValue, Value};
+use serde_json::{Value, from_value, value::RawValue};
 use tracing::instrument;
 use tracing_subscriber::EnvFilter;
 
